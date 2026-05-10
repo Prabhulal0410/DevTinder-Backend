@@ -1,4 +1,5 @@
 import express from "express";
+import {adminAuth} from "./middlewares/auth.js"
 
 const app = express();
 
@@ -11,15 +12,7 @@ const app = express();
 // })
 
 // Handle Auth MIddleware for all POST,GET,PUT,DELETE
-app.use("/admin",(req,res,next)=>{
-  const token = "abc"
-  const isAdminAuth = token ==="abc"
-  if(!isAdminAuth){
-    res.status(401).send("unauthorized request")
-  }else{
-    next()
-  }
-})
+app.use("/admin",adminAuth)
 
 app.get("admin/getAllData",(req,res)=>{
   res.send("All Data")
