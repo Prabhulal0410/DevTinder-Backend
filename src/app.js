@@ -18,6 +18,14 @@ app.get("admin/getAllData",(req,res)=>{
   res.send("All Data")
 })
 
+// error handling if we use err then order is imp 
+// we should use try catch for error handling
+app.use("/",(err,req,res,next)=>{
+  if(err){
+    res.status(500).send("something went wrong")
+  }
+})
+
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
