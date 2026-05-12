@@ -11,12 +11,19 @@ app.use(express.json())
 app.post("/signup",async (req,res)=>{
   //creating new instance of the User model
 const user = new User(req.body)
-
   await user.save()
   res.send("user Added")
 })
 
-
+// Feed api - get all the user
+app.get("/feed",async (req,res)=>{
+  try {
+    const users= await User.find({})
+    res.send(users)
+  } catch (error) {
+    res.status(400).send("Somethign went wrong")
+  }
+})
 
 
 
