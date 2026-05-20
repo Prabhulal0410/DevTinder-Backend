@@ -5,6 +5,7 @@ import { User } from "./models/user.js";
 
 const app = express();
 
+// express give us this methode so that express body understand Body obj
 app.use(express.json())
 
 
@@ -24,8 +25,6 @@ app.get("/feed",async (req,res)=>{
     res.status(400).send("Somethign went wrong")
   }
 })
-
-
 
 
 // Connect DB first
