@@ -9,12 +9,16 @@ const app = express();
 app.use(express.json())
 
 
-app.post("/signup",async (req,res)=>{
-  //creating new instance of the User model
-const user = new User(req.body)
-  await user.save()
-  res.send("user Added")
-})
+app.post("/signup", async (req, res) => {
+
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.status(201).send("User added successfully");
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
 
 // Feed api - get all the user
 app.get("/feed",async (req,res)=>{
