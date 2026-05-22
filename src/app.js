@@ -37,17 +37,24 @@ app.delete("/user",async(req,res)=>{
   }
 })
 
-app.patch("/user",async(req,res)=>{
-  const userId = req.body.userId
+app.patch("/user/:userId",async(req,res)=>{
+  const userId = req.params?.userId
   const data = req.body
+
   try {
+  const allowed_updates= ["photoUrl","about","gender","age","skills","firstName"]
+  const isUpdatedAllowed = Object.keys(data).every((k)=>allowed_updates.includes(k))
+  if(!isUpdatedAllowed){
+    throw new Error("Update not allowed")
+  }
+
     await User.findByIdAndUpdate({_id:userId},data,{returnDocument:"before",runValidators:true},
     )
     //returnDocument:"before" will return user before update and if we user "after" then it will return obj after update doc byDefault it is before if we wont pass anything
     // runValidators unable to run validation function whic is define in schema bydefault it willonly for create if use runValidators:true then only run for update &patch
     res.send("User Updated Succeffully")
   } catch (error) {
-    res.status(400).send("Update Failed")
+    res.status(400).send("Update Failed:" + error.message)
   }
 })
 
