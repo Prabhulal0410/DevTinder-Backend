@@ -41,11 +41,13 @@ app.patch("/user",async(req,res)=>{
   const userId = req.body.userId
   const data = req.body
   try {
-    await User.findByIdAndUpdate({_id:userId},data,{returnDocument:"before"})
+    await User.findByIdAndUpdate({_id:userId},data,{returnDocument:"before",runValidators:true},
+    )
     //returnDocument:"before" will return user before update and if we user "after" then it will return obj after update doc byDefault it is before if we wont pass anything
+    // runValidators unable to run validation function whic is define in schema bydefault it willonly for create if use runValidators:true then only run for update &patch
     res.send("User Updated Succeffully")
   } catch (error) {
-    res.status(400).send("something went wrong")
+    res.status(400).send("Update Failed")
   }
 })
 
