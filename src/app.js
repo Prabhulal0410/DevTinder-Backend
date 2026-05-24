@@ -10,7 +10,6 @@ const app = express();
 // express give us this methode so that express body understand Body obj
 app.use(express.json())
 
-
 app.post("/signup", async (req, res) => {
 
   try {
@@ -31,6 +30,27 @@ app.post("/signup", async (req, res) => {
     res.status(400).send(err.message);
   }
 });
+
+app.post("/login",async(req,res)=>{
+  try {
+    const {emailId,password} = req.body
+
+    const user = await User.findOne({emailId:emailId})
+    if(!user){
+      throw new Error("Invalid credentials")
+    }
+
+    const isPasswordValid = await bcrypt.compare(password,user.password)
+    if(isPasswordValid){
+      res.send("Login Successfull!!!")
+    }else{
+      throw new Error("Invalid credentials")
+    }
+
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+})
 
 // Feed api - get all the user
 app.get("/feed",async (req,res)=>{
