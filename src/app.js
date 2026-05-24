@@ -3,6 +3,7 @@ import {adminAuth} from "./middlewares/auth.js"
 import {connectDB} from "./config/database.js"
 import { User } from "./models/user.js";
 import { validateSignUpData } from "./utils/validation.js";
+import bcrypt from "bcrypt"
 
 const app = express();
 
@@ -16,9 +17,14 @@ app.post("/signup", async (req, res) => {
     // validate Data
     validateSignUpData(req)
 
+    const {firstName,lastName,emailId,password} = req.body
     // Encrypt the password
+    const passwordHash = await bcrypt.hash(password,10)
 
-    const user = new User(req.body);
+    const user = new User({
+      firstName,lastName,emailId,
+      password:passwordHash
+    });
     await user.save();
     res.status(201).send("User added successfully");
   } catch (err) {
