@@ -2,6 +2,7 @@ import express from "express";
 import {adminAuth} from "./middlewares/auth.js"
 import {connectDB} from "./config/database.js"
 import { User } from "./models/user.js";
+import { validateSignUpData } from "./utils/validation.js";
 
 const app = express();
 
@@ -12,6 +13,11 @@ app.use(express.json())
 app.post("/signup", async (req, res) => {
 
   try {
+    // validate Data
+    validateSignUpData(req)
+
+    // Encrypt the password
+
     const user = new User(req.body);
     await user.save();
     res.status(201).send("User added successfully");
