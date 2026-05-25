@@ -4,11 +4,15 @@ import {connectDB} from "./config/database.js"
 import { User } from "./models/user.js";
 import { validateSignUpData } from "./utils/validation.js";
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 // express give us this methode so that express body understand Body obj
 app.use(express.json())
+// cookieParser will read tha cookie data which sent by client.(its a middleware)
+app.use(cookieParser())
 
 app.post("/signup", async (req, res) => {
 
@@ -42,6 +46,12 @@ app.post("/login",async(req,res)=>{
 
     const isPasswordValid = await bcrypt.compare(password,user.password)
     if(isPasswordValid){
+
+      // create jwt token
+      const token = await jwt.sign({_id:user._id},"prabhulaltoken2304") 
+
+      // send token in cookie
+      res.cookie("token",token)
       res.send("Login Successfull!!!")
     }else{
       throw new Error("Invalid credentials")
@@ -50,6 +60,22 @@ app.post("/login",async(req,res)=>{
   } catch (error) {
     res.status(400).send(error.message);
   }
+})
+
+// profile
+app.get("/profile",async (req,res)=>{
+  const cookies = req.cookies
+
+  const {token} = cookies
+
+  // validate token
+  const decodedMsg = await jwt.verify(token,"prabhulaltoken2304")
+  console.log(decodedMsg)
+  
+const {_id} = decodedMsg
+console.log("Logged in user is :" + _id)
+
+  res.send(token)
 })
 
 // Feed api - get all the user
