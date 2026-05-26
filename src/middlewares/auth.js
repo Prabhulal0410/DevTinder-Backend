@@ -1,9 +1,22 @@
-export const adminAuth = (req,res,next)=>{
-  const token = "abc"
-  const isAdminAuth = token ==="abc"
-  if(!isAdminAuth){
-    res.status(401).send("unauthorized request")
-  }else{
-    next()
+import jwt from "jsonwebtoken";
+import { User } from "../models/user.js";
+
+export const userAuth = async (req, res, next) => {
+  try {
+    // read token from cookies
+    const { token } = req.cookies;
+    if (!token) {
+      throw new Error("Token is not valid");
+    }
+    const decodedMsg = await jwt.verify(token, "prabhulaltoken2304");
+
+    const { _id } = decodedMsg;
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    next();
+  } catch (error) {
+    res.status(400).send(error.message);
   }
-}
+};

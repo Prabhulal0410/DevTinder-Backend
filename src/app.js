@@ -1,5 +1,5 @@
 import express from "express";
-import { adminAuth } from "./middlewares/auth.js";
+import {userAuth } from "./middlewares/auth.js";
 import { connectDB } from "./config/database.js";
 import { User } from "./models/user.js";
 import { validateSignUpData } from "./utils/validation.js";
@@ -62,7 +62,7 @@ app.post("/login", async (req, res) => {
 });
 
 // profile
-app.get("/profile", async (req, res) => {
+app.get("/profile",userAuth, async (req, res) => {
   try {
     const cookies = req.cookies;
 
