@@ -1,5 +1,5 @@
 import express from "express";
-import {userAuth } from "./middlewares/auth.js";
+import { userAuth } from "./middlewares/auth.js";
 import { connectDB } from "./config/database.js";
 import { User } from "./models/user.js";
 import { validateSignUpData } from "./utils/validation.js";
@@ -45,10 +45,12 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid credentials");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       // create jwt token
-      const token = await jwt.sign({ _id: user._id }, "prabhulaltoken2304");
+      // const token = await jwt.sign({ _id: user._id }, "prabhulaltoken2304",{expiresIn:"1d"});
+
+      const token = await user.getJWT();
 
       // send token in cookie
       res.cookie("token", token);
@@ -62,22 +64,9 @@ app.post("/login", async (req, res) => {
 });
 
 // profile
-app.get("/profile",userAuth, async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("Invalid Token");
-    }
-
-    // validate token
-    const decodedMsg = await jwt.verify(token, "prabhulaltoken2304");
-    const { _id } = decodedMsg;
-    const user = await User.findById(_id);
-    if(!user){
-      throw new Error("User Tot Found")
-    }
+    const user = req.user;
     res.send(user);
   } catch (error) {
     res.send("Error : " + error.message);

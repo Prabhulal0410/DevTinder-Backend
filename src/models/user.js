@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import validator from 'validator';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt"
 
 const userSchema = mongoose.Schema({
     firstName:{
@@ -59,6 +61,21 @@ const userSchema = mongoose.Schema({
         type:[String],
     }
 },{timestamps:true})
+
+
+// this is helper function/ mongoose schema method which will hep us to create token based on user
+userSchema.methods.getJWT = async function(){
+    const user = this
+    const token = await jwt.sign({ _id: user._id }, "prabhulaltoken2304",{expiresIn:"1d"});
+    return token
+}
+
+userSchema.methods.validatePassword = async function(password){
+    const user = this
+    const passwordHash = user.password
+    const isPasswordValid = await bcrypt.compare(password,passwordHash);
+    return isPasswordValid
+}
 
 export const User = mongoose.model("User",userSchema)
 
