@@ -1,5 +1,5 @@
 import express from "express"
-import { userAuth } from "../middlewares/auth"
+import { userAuth } from "../middlewares/auth.js"
 
 const requestRouter = express.Router()
 
@@ -8,3 +8,5 @@ requestRouter.post("/sendConnectionRequest",userAuth,async(req,res)=>{
 
     res.send(user.firstName)
 })
+
+export default requestRouter

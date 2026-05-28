@@ -1,10 +1,10 @@
 import express from "express"
-import { userAuth } from "../middlewares/auth";
+import { userAuth } from "../middlewares/auth.js";
 
-const authRouter = express.Router()
+const profileRouter = express.Router()
 
 // profile
-app.get("/profile", userAuth, async (req, res) => {
+profileRouter.get("/profile", userAuth, async (req, res) => {
   try {
     const user = req.user;
     res.send(user);
@@ -12,3 +12,5 @@ app.get("/profile", userAuth, async (req, res) => {
     res.send("Error : " + error.message);
   }
 });
+
+export default profileRouter

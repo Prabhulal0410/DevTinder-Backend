@@ -1,18 +1,21 @@
 import express from "express";
-import { userAuth } from "./middlewares/auth.js";
 import { connectDB } from "./config/database.js";
-import { User } from "./models/user.js";
 import { validateSignUpData } from "./utils/validation.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-
+import authRouter from "./routes/auth.js";
+import profileRouter from "./routes/profile.js";
+import requestRouter from "./routes/request.js";
 const app = express();
 
 // express give us this methode so that express body understand Body obj
 app.use(express.json());
 // cookieParser will read tha cookie data which sent by client.(its a middleware)
 app.use(cookieParser());
+
+// Use Routes
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
 
 
 
