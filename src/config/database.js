@@ -20,4 +20,4 @@ export const connectDB = async () => {
 };
 
 // devTinder is the name of database 
-// if you dont put somethign after .net/ it will refer to cluster whic we create in atlas
+// if you dont put somethign after .net/ it will refer to cluster which we create in atlas

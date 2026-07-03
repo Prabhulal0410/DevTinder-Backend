@@ -8,8 +8,12 @@ export const userAuth = async (req, res, next) => {
     if (!token) {
       throw new Error("Token is not valid");
     }
+
+    // verify token which we got from cookies
     const decodedMsg = await jwt.verify(token, "prabhulaltoken2304");
 
+
+    // get id from token and find user by id
     const { _id } = decodedMsg;
     const user = await User.findById(_id);
     if (!user) {
