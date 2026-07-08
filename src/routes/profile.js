@@ -34,4 +34,28 @@ profileRouter.patch("/profile/edit",userAuth,async(req,res)=>{
   }
 })
 
+
+// homework profile/password   ===> means forget password
+
+// Update Password
+profileRouter.patch("/profile/password", userAuth, async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    if (!password) {
+      throw new Error("Password is required");
+    }
+
+    const loggedInUser = req.user;
+
+    loggedInUser.password = password;
+
+    await loggedInUser.save();
+
+    res.send("Password updated successfully");
+  } catch (error) {
+    res.status(400).send("Error : " + error.message);
+  }
+});
+
 export default profileRouter
