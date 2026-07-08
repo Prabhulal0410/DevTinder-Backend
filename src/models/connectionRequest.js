@@ -1,0 +1,22 @@
+import mongoose, { Schema } from "mongoose";
+
+const connectionRequestSchema = new mongoose.Schema({
+    fromUserId:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
+    },
+    toUserId:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
+    },
+    status:{
+        type:String,
+        enum:{
+            values:["ignored","intrested","accepted","rejected"],
+            message:`{VALUE} is incooorect status type`
+        },
+        required:true
+    }
+},{timestamps:true})
+
+export const ConnectionRequestModel = new mongoose.model("ConnectionRequestModel",connectionRequestSchema)
