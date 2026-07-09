@@ -32,14 +32,40 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
     }
 
 
-    // if fromUser has send request to toUser then again it can't send it and viceversa
-    // same time toUser also can't send request to fromUser
-    const existingConnectionRequest = await ConnectionRequest.findOne({
-        $or:[
-            {fromUserId,toUserId},
-            {fromUserId:toUserId,toUserId:fromUserId}
-        ]
-    })
+   // Check if a connection request already exists between these two users.
+//
+// We need to check both directions:
+//
+// 1. Logged-in user  ------> Target user
+//    (Has the current user already sent a request?)
+//
+// 2. Target user ------> Logged-in user
+//    (Has the target user already sent a request?)
+//
+// If any one of these exists, we should not allow creating
+// another connection request because there should be only
+// one request between two users.
+
+const existingConnectionRequest = await ConnectionRequest.findOne({
+  $or: [
+
+    // Case 1:
+    // Check if the logged-in user has already sent
+    // a request to the target user.
+    {
+      fromUserId,
+      toUserId,
+    },
+
+    // Case 2:
+    // Check if the target user has already sent
+    // a request to the logged-in user.
+    {
+      fromUserId: toUserId,
+      toUserId: fromUserId,
+    },
+  ],
+});
     if(existingConnectionRequest){
         return res.status(400).send({
             message:"Connection Request Already Exists!!"
@@ -55,7 +81,7 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
     const data = await connectionRequest.save()
 
     res.json({
-        message:"connection request sent Successfully!",
+        message:req.user.firstName + "is" + status + "in" + toUser.firstName,
         data
     })
 
