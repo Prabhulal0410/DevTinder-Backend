@@ -28,14 +28,12 @@ const connectionRequestSchema = new mongoose.Schema(
 connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
 
 // this is called before we save the data.
-connectionRequestSchema.pre("save", function (next) {
+connectionRequestSchema.pre("save", async function () {
   const connectionRequest = this;
 
-  // check if the fromUserId is same as toUserId
   if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
-    throw new Error("cannot send request to youself");
+    throw new Error("Cannot send request to yourself");
   }
-  next();
 });
 
 export const ConnectionRequest = new mongoose.model(

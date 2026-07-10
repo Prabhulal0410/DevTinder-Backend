@@ -27,7 +27,7 @@ requestRouter.post(
 
       // check that user is there in db whome we will sending request
       const toUser = await User.findById(toUserId);
-      if (!user) {
+      if (!toUser) {
         return res.status(404).json({
           message: "User not found",
         });
@@ -93,12 +93,12 @@ requestRouter.post(
 
 
 // API for accept/reject request (who receives request)
-requestRouter.post("request/review/:status/:requestId",userAuth,async(req,res)=>{
+requestRouter.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
 
   try {
     
     const loggedInUser = req.user
-    const {status,requestId} = res.params
+    const {status,requestId} = req.params
 
     const allowedStatus = ["accepted","rejected"];
       if(!allowedStatus.includes(status)){
