@@ -90,47 +90,48 @@ requestRouter.post(
   },
 );
 
-
-
 // API for accept/reject request (who receives request)
-requestRouter.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
 
-  try {
-    
-    const loggedInUser = req.user
-    const {status,requestId} = req.params
-
-    const allowedStatus = ["accepted","rejected"];
-      if(!allowedStatus.includes(status)){
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
         return res.status(400).json({
-          message:"Status not allowed!"
-        })
+          message: "Status not allowed!",
+        });
       }
-    
+
       const connectionRequest = await ConnectionRequest.findOne({
-        _id:requestId,
-        toUserId:loggedInUser._id,
-        status:"intrested",
-      })
-      if(!connectionRequest){
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "intrested",
+      });
+      if (!connectionRequest) {
         return res.status(404).json({
-          message:"Connection request not found"
-        })
+          message: "Connection request not found",
+        });
       }
 
+      connectionRequest.status = status;
 
-      connectionRequest.status = status
-
-      const data = await connectionRequest.save()
+      const data = await connectionRequest.save();
       res.json({
-        message:"Connection request "
- + status , data  })
-
-
-  } catch (error) {
-    res.status(400).send("Error : " + error.message)
-  }
-
-})
+        message: "Connection request " + status,
+        data,
+      });
+    } catch (error) {
+      res.status(400).send("Error : " + error.message);
+    }
+  },
+);
 
 export default requestRouter;
+
+
+// POST --> Means user will insert or send data into db so we have to check all data and user info
+// GET --> we have to fetch data from db so make sure send only allowed data not all
