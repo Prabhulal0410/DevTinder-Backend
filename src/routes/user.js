@@ -11,8 +11,10 @@ userRouter.get("/user/requests/received",userAuth,async(req,res)=>{
 
         const connectionRequests = await ConnectionRequest.find({
             toUserId : loggedInUser._id,
-            status:"intrested"
-        })
+            status:"intrested",
+        }).populate("fromUserId",["firstName","lastName","photoUrl"])
+        // }).populate("fromUserId", "firtName lastName") this is also one way to write filters
+
         res.json({
             message:"Data Fetched succsfully!!",
             connectionRequests
