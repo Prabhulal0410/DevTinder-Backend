@@ -60,7 +60,15 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 userRouter.get("/user/feed",userAuth,async(req,res)=>{
   try {
     
-    
+    // user shouldno all the other card except
+    // 1.his own card
+    // 2.his connections
+    // 3.ignored people
+    // 4.already sent the connection request
+
+    const loggedInUser = req.user
+
+    // find all connectin requests (sent + received)
 
   } catch (error) {
     res.status(400).json({
