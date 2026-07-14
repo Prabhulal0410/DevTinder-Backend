@@ -1,6 +1,7 @@
 import express from "express";
 import { userAuth } from "../middlewares/auth.js";
 import { ConnectionRequest } from "../models/connectionRequest.js";
+import { User } from "../models/user.js";
 const userRouter = express.Router();
 
 const USER_SAFE_DATA = "firstName lastName photoUrl age gender skills";
@@ -59,17 +60,40 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 // api for user feed
 userRouter.get("/user/feed",userAuth,async(req,res)=>{
   try {
-    
     // user shouldno all the other card except
     // 1.his own card
     // 2.his connections
     // 3.ignored people
     // 4.already sent the connection request
 
-    const loggedInUser = req.user
+    const loggedInUser = req.user;
 
     // find all connectin requests (sent + received)
+    const connectionRequests = await ConnectionRequest.find({
+      $or: [
+        {fromUserId: loggedInUser._id},
+        {toUserId: loggedInUser._id },
+      ],
+    }).select("fromUserId toUserId");
 
+    //users to hide from loggedin user
+    const hideUserFromFeed = new Set()
+    connectionRequests.forEach((req)=>{
+      hideUserFromFeed.add(req.fromUserId.toString());
+      hideUserFromFeed.add(req.toUserId.toString())
+    })
+
+    const users = await User.find({
+      $and:[{ _id : {$nin:Array.from(hideUserFromFeed)}},
+            {_id :{$ne:loggedInUser._id}}
+      ]}
+    ).select(USER_SAFE_DATA)
+
+
+
+    res.json({
+      users,
+    });
   } catch (error) {
     res.status(400).json({
       message:error.message
