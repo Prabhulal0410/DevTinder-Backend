@@ -70,6 +70,11 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     // Logged-in user is added by the userAuth middleware after JWT verification
     const loggedInUser = req.user;
 
+    const page = parseInt(req.query.page) || 1
+    let limit = parseInt(req.query.limit) || 10
+    limit = limit >50 ? 50 : limit
+    const skip = (page - 1)*limit
+
     // find all connectin requests (sent + received)
     // We need both because:
     // If I sent a request to someone -> don't show again
@@ -122,7 +127,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     })
     // Return only safe fields like firstName, lastName, photoUrl etc.
     // Hide password, email, tokens, etc.
-    .select(USER_SAFE_DATA);
+    .select(USER_SAFE_DATA).skip(skip).limit(limit)
 
     // Send the filtered users as feed
     res.json({
