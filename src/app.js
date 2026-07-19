@@ -6,9 +6,12 @@ import authRouter from "./routes/auth.js";
 import profileRouter from "./routes/profile.js";
 import requestRouter from "./routes/request.js";
 import userRouter from "./routes/user.js";
+import cors from "cors";
 
 const app = express();
 
+// Adds headers: Access-Control-Allow-Origin: *
+app.use(cors())
 // express give us this methode so that express body understand Body obj
 app.use(express.json());
 // cookieParser will read tha cookie data which sent by client.(its a middleware)
