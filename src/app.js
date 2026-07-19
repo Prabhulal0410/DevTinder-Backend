@@ -11,7 +11,10 @@ import cors from "cors";
 const app = express();
 
 // Adds headers: Access-Control-Allow-Origin: *
-app.use(cors())
+app.use(cors({
+  origin: "*",
+  credentials: true,
+}))
 // express give us this methode so that express body understand Body obj
 app.use(express.json());
 // cookieParser will read tha cookie data which sent by client.(its a middleware)
