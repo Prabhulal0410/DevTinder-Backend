@@ -6,7 +6,7 @@ export const userAuth = async (req, res, next) => {
     // read token from cookies
     const { token } = req.cookies;
     if (!token) {
-      return res.status(410).json({message: "Token not found pls login first"});
+      return res.status(401).json({ message: "Token not found pls login first" });
     }
 
     // verify token which we got from cookies
