@@ -6,7 +6,7 @@ export const userAuth = async (req, res, next) => {
     // read token from cookies
     const { token } = req.cookies;
     if (!token) {
-      throw new Error("Token is not valid");
+      return res.status(410).json({message: "Token not found pls login first"});
     }
 
     // verify token which we got from cookies
@@ -17,13 +17,13 @@ export const userAuth = async (req, res, next) => {
     const { _id } = decodedMsg;
     const user = await User.findById(_id);
     if (!user) {
-      throw new Error("User not found");
+      return res.status(404).json({message: "User not found"});
     }
 
     req.user = user
 
     next();
   } catch (error) {
-    res.status(400).send(error.message);
+    return res.status(400).json({message: error.message});
   }
 };
