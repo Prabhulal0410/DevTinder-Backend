@@ -1,17 +1,15 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { User } from "../models/user.js";
 import { validateSignUpData } from "../utils/validation.js";
 const authRouter = express.Router();
 
 authRouter.post("/signup", async (req, res) => {
   try {
-    // validate Data
     validateSignUpData(req);
 
-    const { firstName, lastName, emailId, password, photoUrl } = req.body;
-    // Encrypt the password
+    const { firstName, lastName, emailId, password, photoUrl, age, gender, about, skills } = req.body;
+
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = new User({
@@ -20,16 +18,25 @@ authRouter.post("/signup", async (req, res) => {
       emailId,
       password: passwordHash,
       photoUrl,
+      age,
+      gender,
+      about,
+      skills,
     });
+
     await user.save();
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
     res.status(201).json({
       message: "User created successfully",
-      data: user,
+      data: userResponse,
     });
   } catch (err) {
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
-      message: "Something went wrong. Please try again later.",
+      message: err.message || "Something went wrong. Please try again later.",
     });
   }
 });
@@ -38,7 +45,6 @@ authRouter.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
 
-    // Validate input
     if (!emailId || !password) {
       return res.status(400).json({
         success: false,
@@ -46,7 +52,6 @@ authRouter.post("/login", async (req, res) => {
       });
     }
 
-    // Find user
     const user = await User.findOne({ emailId });
 
     if (!user) {
@@ -56,7 +61,6 @@ authRouter.post("/login", async (req, res) => {
       });
     }
 
-    // Validate password
     const isPasswordValid = await user.validatePassword(password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -64,21 +68,17 @@ authRouter.post("/login", async (req, res) => {
         message: "Incorrect password. Please try again.",
       });
     }
-    if (isPasswordValid) {
-      // create jwt token
-      // const token = await jwt.sign({ _id: user._id }, "prabhulaltoken2304",{expiresIn:"1d"});
 
-      const token = await user.getJWT();
+    const token = await user.getJWT();
+    res.cookie("token", token);
 
-      // send token in cookie
-      res.cookie("token", token);
-      res.status(200).json({
-        message: "Login successful",
-        data: user,
-      });
-    } else {
-      throw new Error("Invalid credentials");
-    }
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.status(200).json({
+      message: "Login successful",
+      data: userResponse,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

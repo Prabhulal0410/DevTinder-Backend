@@ -18,15 +18,6 @@ const userSchema = mongoose.Schema(
     emailId: {
       type: String,
       required: true,
-      // unique: true tells MongoDB to create a UNIQUE INDEX on this field.
-      // Because of this:
-      // 1. Two users cannot have the same email address.
-      // 2. MongoDB uses the index to find users by email much faster
-      //    than scanning every document in the collection.
-      // Note:
-      // - 'unique' is NOT a Mongoose validator.
-      // - It creates a unique index in MongoDB.
-      // - If we try to save a duplicate email, MongoDB throws a duplicate key error (E11000).
       unique: true,
       lowercase: true,
       trim: true,
@@ -42,7 +33,7 @@ const userSchema = mongoose.Schema(
       unique: true,
       validate(value) {
         if (!validator.isStrongPassword(value)) {
-          throw new Error("Enter stromg password");
+          throw new Error("Enter strong password");
         }
       },
     },
@@ -51,18 +42,12 @@ const userSchema = mongoose.Schema(
       min: 18,
       max: 50,
     },
-    grnder: {
+    gender: {
       type: String,
       enum: {
         values: ["male", "female", "other"],
         message: `{VALUE} is not a valid gender type`,
       },
-      // validate(value){
-      //     if(!["male","female","other"].includes(value)){
-      //         throw new Error("Gender data is not valid")
-      //     }
-      // }
-      // validate method only works when create something not for update
     },
     photoUrl: {
       type: String,
@@ -70,7 +55,7 @@ const userSchema = mongoose.Schema(
     },
     about: {
       type: String,
-      default: "This is default value for about",
+      default: "New here — still writing my bio!",
     },
     skills: {
       type: [String],
@@ -79,7 +64,6 @@ const userSchema = mongoose.Schema(
   { timestamps: true },
 );
 
-// this is helper function/ mongoose schema method which will hep us to create token based on user
 userSchema.methods.getJWT = async function () {
   const user = this;
   const token = await jwt.sign({ _id: user._id }, "prabhulaltoken2304", {
@@ -96,5 +80,3 @@ userSchema.methods.validatePassword = async function (password) {
 };
 
 export const User = mongoose.model("User", userSchema);
-
-// User is the name of model (inside this )
