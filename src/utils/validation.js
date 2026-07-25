@@ -15,9 +15,11 @@ export const validateEditProfileData = (req) => {
   const allowedEditFields = [
     "firstName",
     "lastName",
+    "age",
+    "gender",
     "about",
     "skills",
-    "gender",
+    "photoUrl",
   ];
 
   return Object.keys(req.body).every((field) =>

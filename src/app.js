@@ -12,7 +12,7 @@ const app = express();
 
 // Adds headers: Access-Control-Allow-Origin: *
 app.use(cors({
-  origin: "*",
+  origin: "http://localhost:5173",
   credentials: true,
 }))
 // express give us this methode so that express body understand Body obj
