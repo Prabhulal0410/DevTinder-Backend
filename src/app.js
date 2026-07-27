@@ -14,28 +14,30 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // exact frontend origin — NOT "*"
+    origin: ["http://localhost:5173"],
+    methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
-    methods: ["GET", "POST", "PATCH", "DELETE", "PUT"], // must explicitly include PATCH
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 // express give us this methode so that express body understand Body obj
 app.use(express.json());
 // cookieParser will read tha cookie data which sent by client.(its a middleware)
 app.use(cookieParser());
-// app.use((req, res, next) => {
-//   console.log(`${req.method} ${req.url}`);
-//   next();
-// });
+
+// app.get('/', (req, res) => {
+//     res.json("Hello Universe!")
+// })
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
 // Use Routes
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
-app.use("/", userRouter)
-
-
+app.use("/", userRouter);
 
 // Connect DB first
 connectDB()
