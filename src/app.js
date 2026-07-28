@@ -15,7 +15,7 @@ const app = express();
 app.use(
   cors({
     origin: ["http://localhost:5173"],
-    methods: ["POST", "GET", "PUT", "DELETE"],
+    methods: ["POST", "GET", "PUT", "DELETE","PATCH"],
     credentials: true,
   }),
 );
@@ -24,9 +24,6 @@ app.use(express.json());
 // cookieParser will read tha cookie data which sent by client.(its a middleware)
 app.use(cookieParser());
 
-// app.get('/', (req, res) => {
-//     res.json("Hello Universe!")
-// })
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
